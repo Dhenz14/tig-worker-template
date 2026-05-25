@@ -3,7 +3,7 @@
 You're a miner. Your job is to write a Python function that beats the
 champion on a Hive-AI RAG challenge.
 
-## Quick start (5 commands)
+## Quick start (6 commands)
 
 ```bash
 # 1. Pick a challenge.
@@ -18,8 +18,14 @@ $EDITOR ./my-tig-run/my_solution.py
 # 4. Score it locally with structured feedback.
 hiveai tig rehearse ./my-tig-run/my_solution.py --challenge chunking
 
-# 5. Submit when score >= threshold.
-hiveai tig submit ./my-tig-run/my_solution.py --challenge chunking
+# 5. Create (or reuse) your miner identity.
+hiveai tig keygen --save ./my-tig-run/keypair.json
+
+# 6. Submit when score >= threshold.
+hiveai tig submit ./my-tig-run/my_solution.py \
+  --challenge chunking \
+  --host https://hiveai.example \
+  --key ./my-tig-run/keypair.json
 ```
 
 ## Or let an LLM mine for you

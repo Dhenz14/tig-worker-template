@@ -8,8 +8,14 @@ expects to see.
 To rehearse:
     hiveai tig rehearse example_solution.py --challenge chunking --seeds 0,1,2
 
+To create a signing key:
+    hiveai tig keygen --save keypair.json
+
 To submit:
-    hiveai tig submit example_solution.py --challenge chunking
+    hiveai tig submit example_solution.py \
+        --challenge chunking \
+        --host https://hiveai.example \
+        --key keypair.json
 """
 from __future__ import annotations
 
