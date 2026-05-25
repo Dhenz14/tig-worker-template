@@ -1,44 +1,43 @@
-# Publishing this template as a standalone repo
+# Publishing and Sync Policy
 
-This directory is the source of truth for the `tig-worker-template`
-public repository. It currently lives inside the Hive-AI monorepo so the
-files stay in sync with the protocol; promote it to its own repo when
-the protocol opens to outside miners.
+`Dhenz14/tig-worker-template` is already the public standalone repository for
+the TIG worker starter. Treat this repo as the source of truth for outside
+miners. The Hive-AI monorepo may keep a mirrored `templates/tig-worker/` copy
+for local development, but public-facing template changes should land here
+first or be mirrored here immediately in the same release slice.
 
-## One-time publish
+## Release Update
+
+Use a fresh clone or clean worktree, run the template checks, and push to
+`main` only after the contract is green:
 
 ```bash
-# 1. Sync to a fresh clone outside the monorepo.
-TARGET=$HOME/projects/tig-worker-template
-mkdir -p "$TARGET"
-rsync -a --exclude='__pycache__' --exclude='runs/' --exclude='keypair.json' \
-    templates/tig-worker/ "$TARGET/"
-
-# 2. Initialize git in the target.
-cd "$TARGET"
-git init -b main
-git add .
-git commit -m "feat: initial commit — TIG worker template (mirrored from Hive-AI)"
-
-# 3. Create the GitHub repo + push.
-gh repo create Dhenz14/tig-worker-template --public --source=. --push
+git clone https://github.com/Dhenz14/tig-worker-template.git
+cd tig-worker-template
+python3 scripts/check_template_contract.py
+git status --short
 ```
 
-## Keeping in sync after publish
-
-Every time `templates/tig-worker/` changes in this repo, mirror the
-update:
+If a Hive-AI monorepo change updates `templates/tig-worker/`, mirror that exact
+change back into this repo from a reviewed checkout:
 
 ```bash
-cd $HOME/projects/tig-worker-template
 rsync -a --delete \
-    --exclude='__pycache__' --exclude='runs/' --exclude='keypair.json' \
-    --exclude='.git/' \
-    /path/to/Hive-AI/templates/tig-worker/ ./
+  --exclude='.git/' \
+  --exclude='__pycache__' \
+  --exclude='runs/' \
+  --exclude='keypair.json' \
+  /path/to/Hive-AI/templates/tig-worker/ ./
+python3 scripts/check_template_contract.py
+git diff --check
 git add -A
-git commit -m "sync: update from Hive-AI@<sha>"
-git push
+git commit -m "sync: update TIG worker template from Hive-AI@<sha>"
+git push origin main
 ```
 
-A scheduled GitHub Action on the source repo can do this automatically
-once the standalone repo exists.
+## Local Secrets
+
+Never commit `keypair.json`, run outputs, local provider tokens, or model
+credentials. The `auto-mine` path is BYOM; pass the model identifier through
+`MODEL=<provider:model>` or `HIVEAI_TIG_MODEL`, and keep provider credentials in
+your local environment.

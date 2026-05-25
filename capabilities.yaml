@@ -1,74 +1,117 @@
 # capabilities.yaml -- tig-worker-template surface registry
 #
-# Registers the public CLI surface of the tig-worker drop-in starter for
-# Hive-AI TIG-style RAG-improvement mining. Consumed by the Hive-AI
-# unified capabilities registry. Schema: bare list of capability entries
-# keyed by name (kebab-case), organ (one of 10 canonical organs), and
-# surface_type (cli_command for entrypoints exposed as ).
-#
-# Organ mapping (per docs/FEATURE_ORGAN_REGISTRY.md):
-#   - senses.ingest_signal: fetch/rehearse/submit/auto-mine -- the ingest
-#     path that pulls challenge specs, scores candidates, and submits to
-#     the frontier. TIG miners are signal producers for the RAG brain.
-#   - immune.eval_safety: list/keygen/leaderboard -- discovery + identity
-#     + frontier inspection primitives.  and  are
-#     eval/visibility surfaces;  is the identity primitive
-#     gating submission authenticity.
-#
-# Source: README.md (quick-start commands) + Makefile (target enumeration).
+# Canonical capability contract for the public TIG worker starter. This file is
+# consumed by Hive-AI's unified capability registry.
 
-- name: tig-list-challenges
-  organ: immune.eval_safety
-  surface_type: cli_command
-  surface_path: hiveai tig list
-  description: List available TIG RAG-improvement challenges (chunking, embedding, index, etc.) that a miner can fetch and attempt.
-  status: LIVE
-  source_file: README.md
+repo: tig-worker-template
+schema_version: hiveai.unified_capability.v1
+contracts:
+  - feature: tig-list-challenges
+    organ_id: immune.eval_safety
+    source_organ: immune.eval_safety
+    synergy_targets:
+      - senses.ingest_signal
+    gap_status: LIVE
+    repo: tig-worker-template
+    surface_type: cli_command
+    surface_path: hiveai tig list
+    description: List available TIG RAG-improvement challenges that a miner can fetch and attempt.
+    evidence_refs:
+      - README.md
+      - Makefile
+    entry_path: README.md#quick-start-5-commands
 
-- name: tig-fetch-challenge
-  organ: senses.ingest_signal
-  surface_type: cli_command
-  surface_path: hiveai tig fetch <challenge> --dest <dir>
-  description: Drop the spec, manifest, and skeleton solution file for a challenge into a working directory so the miner can edit my_solution.py.
-  status: LIVE
-  source_file: README.md
+  - feature: tig-fetch-challenge
+    organ_id: senses.ingest_signal
+    source_organ: senses.ingest_signal
+    synergy_targets:
+      - memory.retrieval_core
+      - immune.eval_safety
+    gap_status: LIVE
+    repo: tig-worker-template
+    surface_type: cli_command
+    surface_path: hiveai tig fetch <challenge> --dest <dir>
+    description: Drop the spec, manifest, and skeleton solution file for a challenge into a working directory.
+    evidence_refs:
+      - README.md
+      - Makefile
+    entry_path: README.md#quick-start-5-commands
 
-- name: tig-rehearse-solution
-  organ: senses.ingest_signal
-  surface_type: cli_command
-  surface_path: hiveai tig rehearse <file> --challenge <name>
-  description: Score a candidate Python solution locally in the sandbox (AST denylist, mem/CPU/wallclock caps) and return structured feedback before submission.
-  status: LIVE
-  source_file: README.md
+  - feature: tig-rehearse-solution
+    organ_id: senses.ingest_signal
+    source_organ: senses.ingest_signal
+    synergy_targets:
+      - immune.eval_safety
+      - memory.retrieval_core
+    gap_status: LIVE
+    repo: tig-worker-template
+    surface_type: cli_command
+    surface_path: hiveai tig rehearse <file> --challenge <name>
+    description: Score a candidate Python solution locally in the sandbox and return structured feedback before submission.
+    evidence_refs:
+      - README.md
+      - example_solution.py
+    entry_path: README.md#quick-start-5-commands
 
-- name: tig-submit-solution
-  organ: senses.ingest_signal
-  surface_type: cli_command
-  surface_path: hiveai tig submit <file> --challenge <name> --host <url> --key <keypair.json>
-  description: Sign the candidate with the miner ed25519 keypair and submit it to the Hive-AI host for frontier evaluation and promotion consideration.
-  status: LIVE
-  source_file: README.md
+  - feature: tig-submit-solution
+    organ_id: senses.ingest_signal
+    source_organ: senses.ingest_signal
+    synergy_targets:
+      - immune.eval_safety
+      - memory.retrieval_core
+    gap_status: LIVE
+    repo: tig-worker-template
+    surface_type: cli_command
+    surface_path: hiveai tig submit <file> --challenge <name> --host <url> --key <keypair.json>
+    description: Sign the candidate with the miner ed25519 keypair and submit it for frontier evaluation.
+    evidence_refs:
+      - README.md
+      - Makefile
+    entry_path: README.md#quick-start-5-commands
 
-- name: tig-auto-mine
-  organ: senses.ingest_signal
-  surface_type: cli_command
-  surface_path: hiveai tig auto-mine --challenge <name> --model <id> --rounds <n>
-  description: Run an LLM-driven mining loop that reads the manifest, prompts the model for candidates, scores each locally, and iterates within a USD budget. Optional --submit pushes the best candidate.
-  status: LIVE
-  source_file: README.md
+  - feature: tig-auto-mine
+    organ_id: senses.ingest_signal
+    source_organ: senses.ingest_signal
+    synergy_targets:
+      - memory.retrieval_core
+      - immune.eval_safety
+    gap_status: LIVE
+    repo: tig-worker-template
+    surface_type: cli_command
+    surface_path: hiveai tig auto-mine --challenge <name> --model <provider:model> --rounds <n>
+    description: Run a BYOM LLM-driven mining loop that reads the manifest, scores candidates locally, and optionally submits the best candidate.
+    evidence_refs:
+      - README.md
+      - Makefile
+    entry_path: README.md#or-let-an-llm-mine-for-you
 
-- name: tig-keygen
-  organ: immune.eval_safety
-  surface_type: cli_command
-  surface_path: hiveai tig keygen --save <keypair.json>
-  description: Generate an ed25519 keypair that establishes the miner identity for reward attribution on the leaderboard.
-  status: LIVE
-  source_file: README.md
+  - feature: tig-keygen
+    organ_id: immune.eval_safety
+    source_organ: immune.eval_safety
+    synergy_targets:
+      - senses.ingest_signal
+    gap_status: LIVE
+    repo: tig-worker-template
+    surface_type: cli_command
+    surface_path: hiveai tig keygen --save <keypair.json>
+    description: Generate an ed25519 keypair that establishes miner identity for signed submissions and reward attribution.
+    evidence_refs:
+      - README.md
+      - Makefile
+    entry_path: README.md#files-in-this-template
 
-- name: tig-leaderboard
-  organ: immune.eval_safety
-  surface_type: cli_command
-  surface_path: hiveai tig leaderboard <challenge>
-  description: Display the live frontier for a challenge -- submission rank, times reused in the RAG hot path (last 7 days), and retrieval lift vs prior champion.
-  status: LIVE
-  source_file: Makefile
+  - feature: tig-leaderboard
+    organ_id: immune.eval_safety
+    source_organ: immune.eval_safety
+    synergy_targets:
+      - senses.ingest_signal
+      - memory.retrieval_core
+    gap_status: LIVE
+    repo: tig-worker-template
+    surface_type: cli_command
+    surface_path: hiveai tig leaderboard <challenge>
+    description: Display the live frontier for a challenge, including rank, reuse, and retrieval lift.
+    evidence_refs:
+      - README.md
+      - Makefile
+    entry_path: README.md#reward-signal

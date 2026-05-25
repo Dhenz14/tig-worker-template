@@ -4,17 +4,19 @@
 
 CHALLENGE ?= chunking
 HOST ?= http://127.0.0.1:5000
+MODEL ?= $(HIVEAI_TIG_MODEL)
 
-.PHONY: help fetch rehearse submit auto-mine keygen leaderboard
+.PHONY: help fetch rehearse submit auto-mine keygen leaderboard check
 
 help:
 	@echo "tig-worker targets (CHALLENGE=$(CHALLENGE)):"
 	@echo "  make fetch          — drop spec/manifest/skeleton for $(CHALLENGE)"
 	@echo "  make rehearse       — score my_solution.py locally"
 	@echo "  make submit         — sign + send my_solution.py to $(HOST)"
-	@echo "  make auto-mine      — let an LLM iterate on a candidate"
+	@echo "  make auto-mine      — let a BYOM LLM iterate on a candidate"
 	@echo "  make keygen         — generate ed25519 keypair into keypair.json"
 	@echo "  make leaderboard    — show frontier for $(CHALLENGE)"
+	@echo "  make check          — validate template docs and registry contract"
 
 fetch:
 	hiveai tig fetch $(CHALLENGE) --dest .
@@ -26,10 +28,14 @@ submit:
 	hiveai tig submit my_solution.py --challenge $(CHALLENGE) --host $(HOST) --key keypair.json
 
 auto-mine:
-	hiveai tig auto-mine --challenge $(CHALLENGE) --model claude:opus-4-7 --rounds 3 --dest .
+	@test -n "$(MODEL)" || (echo "Set MODEL=<provider:model> or HIVEAI_TIG_MODEL before auto-mine"; exit 2)
+	hiveai tig auto-mine --challenge $(CHALLENGE) --model "$(MODEL)" --rounds 3 --dest .
 
 keygen:
 	hiveai tig keygen --save keypair.json
 
 leaderboard:
 	hiveai tig leaderboard $(CHALLENGE)
+
+check:
+	python3 scripts/check_template_contract.py

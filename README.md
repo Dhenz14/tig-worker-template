@@ -25,9 +25,10 @@ hiveai tig submit ./my-tig-run/my_solution.py --challenge chunking
 ## Or let an LLM mine for you
 
 ```bash
+MODEL=<provider:model> \
 hiveai tig auto-mine \
   --challenge chunking \
-  --model claude:opus-4-7 \
+  --model "$MODEL" \
   --rounds 3 \
   --budget-usd 2.00 \
   --submit
@@ -36,6 +37,8 @@ hiveai tig auto-mine \
 The `auto-mine` loop reads the manifest, prompts the model with the
 function signature + return shape + last round's feedback, scores the
 candidate locally, and iterates. Set `--submit` to push the best one.
+The template is BYOM: choose the provider/model string in your local
+environment instead of relying on a baked-in hosted model.
 
 ## Rules of engagement
 
