@@ -25,7 +25,7 @@ contracts:
     organ_id: senses.ingest_signal
     source_organ: senses.ingest_signal
     synergy_targets:
-      - memory.retrieval_core
+      - hippocampus.rag_memory
       - immune.eval_safety
     gap_status: LIVE
     repo: tig-worker-template
@@ -42,7 +42,7 @@ contracts:
     source_organ: senses.ingest_signal
     synergy_targets:
       - immune.eval_safety
-      - memory.retrieval_core
+      - hippocampus.rag_memory
     gap_status: LIVE
     repo: tig-worker-template
     surface_type: cli_command
@@ -58,7 +58,7 @@ contracts:
     source_organ: senses.ingest_signal
     synergy_targets:
       - immune.eval_safety
-      - memory.retrieval_core
+      - hippocampus.rag_memory
     gap_status: LIVE
     repo: tig-worker-template
     surface_type: cli_command
@@ -73,7 +73,7 @@ contracts:
     organ_id: senses.ingest_signal
     source_organ: senses.ingest_signal
     synergy_targets:
-      - memory.retrieval_core
+      - hippocampus.rag_memory
       - immune.eval_safety
     gap_status: LIVE
     repo: tig-worker-template
@@ -105,7 +105,7 @@ contracts:
     source_organ: immune.eval_safety
     synergy_targets:
       - senses.ingest_signal
-      - memory.retrieval_core
+      - hippocampus.rag_memory
     gap_status: LIVE
     repo: tig-worker-template
     surface_type: cli_command
